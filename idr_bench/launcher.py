@@ -44,11 +44,6 @@ def parse_configs() -> tuple[Config, dict[str, Any]]:
         default=Path("out_log"),
         help="Where to store submission files and logs",
     )
-    parser.add_argument(
-        "--dry-run",
-        action="store_true",
-        help="do not submit anything, just pretend",
-    )
 
     args, remaining = parser.parse_known_args()
     main_config = Config(**vars(args))

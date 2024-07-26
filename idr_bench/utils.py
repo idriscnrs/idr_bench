@@ -56,7 +56,6 @@ class Config:
     config: Path
     template: Path
     out_dir: Path
-    dry_run: bool
     constraints: list[str]
 
 

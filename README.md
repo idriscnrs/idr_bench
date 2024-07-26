@@ -10,11 +10,11 @@ idr_bench <benchmark_launcher_cli> <benchmark_parameters>
 
 Benchmark launcher CLI include:
 * a config file (`-c` or `--config`). Optional.
-* the slurm job template (`--template`). Defaults to `benchmark_flatiron.slurm`.
-* the output directory (`--out-dir`). Defaults to `benchmark/out_log`.
-* a dry run mode (`--dry-run`) to create the submission file without actually submitting it. Defaults to False.
+* the slurm job template (`--template`). Required.
+* the output directory (`--out-dir`). Defaults to `out_log/`.
+* contraints (`--constraint` or `--constraints`). Defaults to no contraint.
 
-Benchmark parameters can be anything. They just need to be given with two dashes, the name, and an optional value. The value can cover multiple possibilities which are separated by a comma. If the value are integers, then using an hyphen as a separator will allow to sweep through every integers between the two provided (including bounds). If no value is provided, then it is assumed that we want to sweep through `True` and `False`
+Benchmark parameters can be anything. They just need to be given with two dashes, the name, and an optional value. The value can cover multiple possibilities which are separated by a comma. If the value are integers, then using an hyphen as a separator will allow to sweep through every integers between the two provided (including bounds). If no value is provided, then it is assumed that we want to sweep through `True` and `False`.
 
 Example:
 ```bash
