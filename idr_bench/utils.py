@@ -1,7 +1,8 @@
 #! /usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from dataclasses import dataclass, field, fields, asdict
+import sys
+from dataclasses import dataclass, fields, asdict
 from pathlib import Path
 from textwrap import indent
 from typing import Any, ClassVar, Protocol
@@ -53,12 +54,39 @@ class Dataclass(Protocol):
 @dataclass
 class Config:
     config: Path
-    template: str
-    out_dir: str
+    template: Path
+    out_dir: Path
     dry_run: bool
     constraints: list[str]
 
-    directory: Path = field(init=False)
 
-    def __post_init__(self) -> None:
-        self.directory = Path(__file__).parent / self.out_dir
+def query_yes_no(question, default=None):
+    """Ask a yes/no question via input() and return their answer.
+
+    "question" is a string that is presented to the user.
+    "default" is the presumed answer if the user just hits <Enter>.
+            It must be "yes" (the default), "no" or None (meaning
+            an answer is required of the user).
+
+    The "answer" return value is True for "yes" or False for "no".
+
+    Shamelessly stolen from https://stackoverflow.com/questions/3041986/apt-command-line-interface-like-yes-no-input
+    """
+    valid = {"yes": True, "y": True, "ye": True, "no": False, "n": False}
+    if default is None:
+        prompt = " [y/n] "
+    elif default == "yes":
+        prompt = " [Y/n] "
+    elif default == "no":
+        prompt = " [y/N] "
+    else:
+        raise ValueError("invalid default answer: '%s'" % default)
+
+    while True:
+        choice = input(question + prompt).lower()
+        if default is not None and choice == "":
+            return valid[default]
+        elif choice in valid:
+            return valid[choice]
+        else:
+            sys.stdout.write("Please respond with 'yes' or 'no' " "(or 'y' or 'n').\n")

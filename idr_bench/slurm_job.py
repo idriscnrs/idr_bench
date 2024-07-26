@@ -6,6 +6,7 @@ from dataclasses import asdict
 from datetime import datetime
 from pathlib import Path
 from uuid import uuid4
+from textwrap import indent, dedent
 
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
@@ -27,10 +28,10 @@ def new_filename() -> str:
 
 def generate_slurm_script(config: Config, params: Dataclass, filepath: Path) -> str:
     env = Environment(
-        loader=FileSystemLoader(Path(__file__).parent / "templates"),
+        loader=FileSystemLoader(config.template.parent),
         autoescape=select_autoescape(),
     )
-    template = env.get_template(config.template)
+    template = env.get_template(config.template.name)
 
     return template.render(
         output_file=filepath.with_suffix(".out"),
@@ -42,24 +43,27 @@ def generate_slurm_script(config: Config, params: Dataclass, filepath: Path) -> 
     )
 
 
-def write_slurm_script(config: Config, params: Dataclass, filepath: Path) -> None:
+def write_slurm_script(config: Config, params: Dataclass) -> None:
+    filepath = config.out_dir / new_filename()
     slurm_script = generate_slurm_script(config, params, filepath)
+    filepath = filepath.with_suffix(".slurm").resolve()
     filepath.parent.mkdir(exist_ok=True, parents=True)
-    filepath.with_suffix(".slurm").write_text(slurm_script)
+    filepath.write_text(slurm_script)
+    params_str = "\n".join(str(params).split("\n")[1:-1])
+    params_str = indent(dedent(params_str), "\t>>> ")
+    print(f"Would submit {filepath} with following params:\n{params_str}\n{'-' * 50}")
+    return filepath
 
 
-def submit_slurm_script(config: Config, params: Dataclass) -> None:
-    filepath = config.directory / new_filename()
-    write_slurm_script(config, params, filepath)
-    complete_path = filepath.with_suffix(".slurm")
-    if config.dry_run:
-        print(f"Would have submitted {complete_path}")
+def submit_slurm_script(slurm_script: Path) -> bool:
+    process = subprocess.run(
+        ["sbatch", str(slurm_script)],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+    )
+    output = process.stdout.decode("utf-8").strip()
+    if process.returncode == 0:
+        print(f"\033[1;32m{output}\033[0m")
     else:
-        process = subprocess.run(
-            ["sbatch", str(complete_path)],
-            capture_output=True,
-        )
-        if process.returncode == 0:
-            print(process.stdout.decode("utf-8").strip())
-        else:
-            print(process.stderr.decode("utf-8").strip())
+        print(f"\033[1;31m{output}\033[0m")
+    return process.returncode == 0
