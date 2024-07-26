@@ -8,7 +8,7 @@ from typing import Any
 import yaml
 
 from .grid_space import GridSpace
-from .slurm_job import write_slurm_script, submit_slurm_script
+from .slurm_job import submit_slurm_script, write_slurm_script
 from .utils import Config, query_yes_no
 
 
@@ -47,7 +47,7 @@ def parse_configs() -> tuple[Config, dict[str, Any]]:
     parser.add_argument(
         "--dry-run",
         action="store_true",
-        help="do not submit anything, just pretend"
+        help="do not submit anything, just pretend",
     )
 
     args, remaining = parser.parse_known_args()
@@ -82,15 +82,16 @@ def run():
 
     slurm_scripts: list[Path] = []
     for params in grid_space:
-        slurm_scripts.append(
-            write_slurm_script(main_config, params)
-        )
+        slurm_scripts.append(write_slurm_script(main_config, params))
 
-    if query_yes_no("Would you like to submit those slurm files?", default="no"):
+    if query_yes_no(
+        "Would you like to submit those slurm files?",
+        default="no",
+    ):
         for slurm_script in slurm_scripts:
             has_succeeded = submit_slurm_script(slurm_script)
             if not has_succeeded:
-                print(f"\033[1;31mAborted\033[0m")
+                print("\033[1;31mAborted\033[0m")
                 return
     else:
-        print(f"\033[1;31mAborted\033[0m")
+        print("\033[1;31mAborted\033[0m")

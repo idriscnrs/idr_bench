@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import sys
-from dataclasses import dataclass, fields, asdict
+from dataclasses import asdict, dataclass, fields
 from pathlib import Path
 from textwrap import indent
 from typing import Any, ClassVar, Protocol
@@ -70,7 +70,8 @@ def query_yes_no(question, default=None):
 
     The "answer" return value is True for "yes" or False for "no".
 
-    Shamelessly stolen from https://stackoverflow.com/questions/3041986/apt-command-line-interface-like-yes-no-input
+    Shamelessly stolen from
+    https://stackoverflow.com/questions/3041986/apt-command-line-interface-like-yes-no-input
     """
     valid = {"yes": True, "y": True, "ye": True, "no": False, "n": False}
     if default is None:

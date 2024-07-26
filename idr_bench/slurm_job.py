@@ -5,13 +5,12 @@ import subprocess
 from dataclasses import asdict
 from datetime import datetime
 from pathlib import Path
+from textwrap import dedent, indent
 from uuid import uuid4
-from textwrap import indent, dedent
 
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
 from .utils import Config, Dataclass
-
 
 # Requested by Hatim
 namespace_transfer = {
@@ -26,7 +25,11 @@ def new_filename() -> str:
     return f"job_{hour}_{random_id}"
 
 
-def generate_slurm_script(config: Config, params: Dataclass, filepath: Path) -> str:
+def generate_slurm_script(
+    config: Config,
+    params: Dataclass,
+    filepath: Path,
+) -> str:
     env = Environment(
         loader=FileSystemLoader(config.template.parent),
         autoescape=select_autoescape(),
@@ -51,7 +54,9 @@ def write_slurm_script(config: Config, params: Dataclass) -> None:
     filepath.write_text(slurm_script)
     params_str = "\n".join(str(params).split("\n")[1:-1])
     params_str = indent(dedent(params_str), "\t>>> ")
-    print(f"Would submit {filepath} with following params:\n{params_str}\n{'-' * 50}")
+    print(
+        f"Would submit {filepath} with following params:\n" f"{params_str}\n{'-' * 50}"
+    )
     return filepath
 
 

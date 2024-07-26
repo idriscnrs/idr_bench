@@ -49,7 +49,7 @@ def get_iteration_info(log: str) -> dict:
     iteration_info_str = re.findall(
         r"Epoch: \[[0-9]*\]  \[[0-9/ ]*\].* time: ([0-9\.]*)"
         + r"  data: ([0-9\.]*)  max mem: ([0-9\.]*)",
-        log
+        log,
     )
     iteration_times = np.array([float(time[0]) for time in iteration_info_str])
     iteration_data_times = np.array([float(time[1]) for time in iteration_info_str])

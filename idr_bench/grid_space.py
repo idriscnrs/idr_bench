@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import re
-from dataclasses import make_dataclass, asdict
+from dataclasses import asdict, make_dataclass
 from itertools import chain, product
 from typing import Any, Iterator
 
@@ -19,7 +19,7 @@ class Param:
         self.value = value
 
     def __iter__(self) -> Iterator[int | float | str]:
-        if self.value == True:
+        if self.value is True:
             yield True
             yield False
         elif isinstance(self.value, (int, float)):
@@ -80,7 +80,7 @@ class GridSpace:
         for constraint in self.constraints:
             if not eval(constraint, None, D):
                 return False
-        return True        
+        return True
 
     @classmethod
     def from_dict(cls, config: dict[str, Any]):

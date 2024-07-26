@@ -19,9 +19,9 @@ setup(
     url=URL,
     packages=find_packages(),
     entry_points={
-        'console_scripts': [
-            'idr_bench = idr_bench.launcher:run',
-            'idr_bench_results = idr_bench.result:gather_results',
+        "console_scripts": [
+            "idr_bench = idr_bench.launcher:run",
+            "idr_bench_results = idr_bench.result:gather_results",
         ],
     },
     include_package_data=True,
